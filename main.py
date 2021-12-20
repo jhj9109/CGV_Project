@@ -75,6 +75,13 @@ def get_tags_by_class(html_soup, target_cls):
     return html_soup.find_all(is_contain_class_from_tag(target_cls))
 
 
+def get_theater_name(html_soup):
+    col_theater = get_tags_by_class(html_soup, "col-theater")[0]
+    a_tag = col_theater.a
+    return f"{a_tag.contents[0]} {a_tag.contents[2]}"
+    # e.g. CGV 용산아이파크몰, e.g. 씨네드쉐프 압구정
+
+
 def get_day_range(html_soup):
     day_tags = get_tags_by_class(html_soup, "day")
     day_range = []
@@ -148,6 +155,7 @@ def do():
     print(f'요청주소: {request_url_with_out_date}')
 
     # 2. soup에서 원하는 것을 추출하기 위해 파싱 -> 상영 날짜
+    theater_name = get_theater_name(html_soup)
     day_range = get_day_range(html_soup)
 
 
