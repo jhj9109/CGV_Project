@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup as bs
+from parse import get_yyyymmdd_by_url
 
 HTML_PARSER = "html.parser"
 AREA_CODE = "areacode"
@@ -83,10 +84,13 @@ day_tags = get_tags_by_class(html_soup, "day")
 day_range = []
 for day_tag in day_tags:
     a_tag = day_tag.a  # 태그 || None
+    yyyymmdd = get_yyyymmdd_by_url(a_tag.get("href"))
     # span: 월, em: 요일, strong: 일
     children = a_tag.find_all(True, recursive=False)
     m = int(children[0].text.strip()[:-1])  # 월: e.g. 12월
     dd = children[1].text.strip()  # 요일: e.g. 화
     d = int(children[2].text.strip())  # 일: e.g. 20
+    # print(f"{m}월 {d}일 {dd}요일 yyyymmdd: {yyyymmdd}")
+    day_range.append([m, d, dd, yyyymmdd])
 print(f"상영 오픈 범위 : {day_range[0][3]} ~ {day_range[-1][3]}")
 print(day_range)
