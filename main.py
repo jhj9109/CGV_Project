@@ -101,23 +101,34 @@ def get_day_range(html_soup):
 
 def get_screen_data_by_screening(li_tag):
     a_tag = li_tag.find("a")
+    screen_data = {
+        "status": None,
+        "start_time": None,
+        "end_time": None,
+        "remain": None,
+        "href": None,
+    }
+
     if (a_tag == None):
         # 매진 or 상영준비중으로 a태그가 생략 될 수 있다.
         em_tag = li_tag.find("em")
         span_tag = li_tag.find("span")
-        screen_data = [em_tag.string, span_tag.string]
+        start_time = em_tag.string  # e.g."09:05"
+        screen_data["status"] = span_tag.string  # e.g. 매진 or 상영중
+        screen_data["start_time"] = f"{start_time[0:2]}{start_time[3:5]}"
         # print(f"{em_tag.string}시간대 {span_tag.string}")
     else:
         # 모든 정보는 a태그의 attr에서 추출 가능하다.
-        theater_name = a_tag.get("data-theatername")
-        screen_kor_name = a_tag.get("data-screenkorname")
-        ymd = a_tag.get("data-playymd")  # data-playymd == yyyymmdd
-        start_time = a_tag.get("data-playstarttime")
-        end_time = a_tag.get("data-playendtime")
-        remain = int(a_tag.get("data-seatremaincnt"))
-        href = a_tag.get("href")
-        screen_data = [theater_name, screen_kor_name, ymd,
-                       start_time, end_time, remain, href]
+        start_time = a_tag.get("data-playstarttime")  # e.g. "0905"
+        end_time = a_tag.get("data-playendtime")  # e.g. "0905"
+        remain = int(a_tag.get("data-seatremaincnt"))  # e.g. "11"
+        href = a_tag.get("href")  # e.g. "/ticket/?..."
+        screen_data["status"] = "ok"
+        screen_data["start_time"] = start_time
+        screen_data["end_time"] = end_time
+        screen_data["remain"] = remain
+        screen_data["href"] = href
+
     return screen_data
 
 
