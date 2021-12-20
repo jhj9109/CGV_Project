@@ -71,12 +71,12 @@ def is_contain_class_from_tag(target_cls):
     return contain_class
 
 
-def get_tags_by_class(soup, target_cls):
-    return soup.find_all(is_contain_class_from_tag(target_cls))
+def get_tags_by_class(html_soup, target_cls):
+    return html_soup.find_all(is_contain_class_from_tag(target_cls))
 
 
-def get_day_range(soup):
-    day_tags = get_tags_by_class(soup, "day")
+def get_day_range(html_soup):
+    day_tags = get_tags_by_class(html_soup, "day")
     day_range = []
     for day_tag in day_tags:
         a_tag = day_tag.a  # 태그 || None
