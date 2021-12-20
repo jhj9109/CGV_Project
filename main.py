@@ -4,12 +4,20 @@ from bs4 import BeautifulSoup as bs
 HTML_PARSER = "html.parser"
 AREA_CODE = "areacode"
 THEATER_CODE = "theatersCode"
-MOVIE_ID = "midx"
-BASE_URL = "http://www.cgv.co.kr/common/showtimes/iframeTheater.aspx"
+MOVIE_ID = "midx"  # 특정 영화
+MOVIE_CODE = "mcode"  # 특정 영화 & 특정 상영관 종류
+IMAX_LASER_2D = "imax_laser_2d"
+BASE_URL = "http://www.cgv.co.kr/common/showtimes"
+BASE_URL_BY_THEATER = f"{BASE_URL}/iframeTheater.aspx"
+BASE_URL_BY_MOVIE = f"{BASE_URL}/iframeMovie.aspx"
+sample_url = "http://www.cgv.co.kr/common/showtimes/iframeMovie.aspx?midx=84949&mcode=20028635&areacode=13"
 
 movies = {
     "spider_man": {
         MOVIE_ID: "84949",
+        MOVIE_CODE: {
+            IMAX_LASER_2D: "20028635"
+        }
     }
 }
 
@@ -21,18 +29,21 @@ theaters = {
 }
 
 
-def create_url(movie_name, theater_name, type=0, yyyymmdd=""):
+def create_url(movie_name, theater_name, theater_type="imax_laser_2d", yyyymmdd=""):
     areacode = theaters[theater_name][AREA_CODE]
     theaterscode = theaters[theater_name][THEATER_CODE]
     midx = movies[movie_name][MOVIE_ID]
-    date = "" if yyyymmdd == "" else f"&date={yyyymmdd}"
-    url = [
-        # 특정상영관의 상영시간표
-        f"{BASE_URL}?areacode={areacode}&theatercode={theaterscode}&midx={midx}",
+    if theater_type:
         # 특정영화의 상영시간표
-        f"{BASE_URL}?midx={midx}",
-    ]
-    return f"{url[type]}{date}"
+        mcode = movies[movie_name][MOVIE_CODE][theater_type]
+        url = f"{BASE_URL_BY_MOVIE}?midx={midx}&mcode={mcode}"
+    else:
+        # 특정상영관의 상영시간표
+        url = f"{BASE_URL_BY_THEATER}?areacode={areacode}&theatercode={theaterscode}&midx={midx}"
+    if yyyymmdd:
+        # 특정일자 기입.
+        url += f"&date={yyyymmdd}"
+    return url
 
 
 def get_soup_from_url(url):
