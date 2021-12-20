@@ -16,9 +16,10 @@ movies = {
 theaters = {
     "yongsan": {
         AREA_CODE: "01",
-        THEATER_CODE : "0013",
+        THEATER_CODE: "0013",
     }
 }
+
 
 def create_url(movie_name, theater_name, type=0, yyyymmdd=""):
     areacode = theaters[theater_name][AREA_CODE]
@@ -33,12 +34,45 @@ def create_url(movie_name, theater_name, type=0, yyyymmdd=""):
     ]
     return f"{url[type]}{date}"
 
+
 def get_soup_from_url(url):
     response = requests.get(url)  # response 객체
     content = response.content  # html
     soup = bs(content, HTML_PARSER)  # bs class
     return soup
 
+
+def get_attr(tag, attr):
+    return tag.get(attr) if tag.has_attr(attr) else []
+
+
+def is_contain(tag, attr, target):
+    return target in get_attr(tag, attr)
+
+
+def is_contain_class_from_tag(target_cls):
+    def contain_class(tag):
+        return is_contain(tag, "class", target_cls)
+    return contain_class
+
+def get_tags_by_class(soup, target_cls):
+    return soup.find_all(is_contain_class_from_tag(target_cls))
 # 1. 원하는 데이터로 url 생성 후, http 요청 후 soup으로 변환
 request_url = create_url("spider_man", "yongsan")
 html_soup = get_soup_from_url(request_url)
+
+# 2. soup에서 원하는 것을 추출하기 위해 파싱
+day_tags = get_tags_by_class(html_soup, "day")
+
+# 2.1 상영 날짜들 추출
+day_range = []
+for day_tag in day_tags:
+    a_tag = day_tag.a  # 태그 || None
+    # span: 월, em: 요일, strong: 일
+    children = a_tag.find_all(True, recursive=False)
+    m = int(children[0].text.strip()[:-1])  # 월: e.g. 12월
+    dd = children[1].text.strip()  # 요일: e.g. 화
+    d = int(children[2].text.strip())  # 일: e.g. 20
+    # print(f"{month}월 {th}일 {day}요일")
+    day_range.append({"m": m, "d": d, "dd": dd})
+print(day_range)
