@@ -94,3 +94,35 @@ for day_tag in day_tags:
     day_range.append([m, d, dd, yyyymmdd])
 print(f"상영 오픈 범위 : {day_range[0][3]} ~ {day_range[-1][3]}")
 print(day_range)
+
+# # 3. 특정 날짜별 HTTP 요청
+i = 0
+for m, d, dd, yyyymmdd in day_range:
+    request_url = f"{request_url_with_out_date}&date={yyyymmdd}"
+    html_soup = get_soup_from_url(request_url)
+    print("\n", "-"*20, f"{yyyymmdd}일자", "-"*20)
+
+    # 상영관 테이블 -> 해당일자 해당상영관의 상영정보 전체 -> ul
+    info_timetable = get_tags_by_class(html_soup, "info-timetable")[0]
+    ul_tag = info_timetable.ul
+    # 해당일자 해당상영관의 상영정보 하나 -> li
+    li_tags = ul_tag.find_all("li", recursive=False)
+
+    for li_tag in li_tags:
+        a_tag = li_tag.find("a")
+        if (a_tag == None):
+            # 매진 or 상영준비중으로 a태그가 생략 될 수 있다.
+            em_tag = li_tag.find("em")
+            span_tag = li_tag.find("span")
+            print(f"{em_tag.string}시간대 {span_tag.string}")
+            continue
+        # 모든 정보는 a태그의 attr에서 추출 가능하다.
+        href = a_tag.get("href")
+        theater_name = a_tag.get("data-theatername")
+        screen_kor_name = a_tag.get("data-screenkorname")
+        ymd = a_tag.get("data-playymd")  # data-playymd == yyyymmdd
+        start_time = a_tag.get("data-playstarttime")
+        end_time = a_tag.get("data-playendtime")
+        remain = int(a_tag.get("data-seatremaincnt"))
+        print(theater_name, screen_kor_name, ymd,
+              start_time, end_time, f"{remain}석", href)
