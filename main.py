@@ -132,32 +132,44 @@ def get_screen_data_by_screening(li_tag):
     return screen_data
 
 
-def get_timetable_by_day(request_url_with_out_date, yyyymmdd):
+def get_timetable_per_day(request_url_with_out_date, yyyymmdd):
     request_url = f"{request_url_with_out_date}&date={yyyymmdd}"
     html_soup = get_soup_from_url(request_url)
-    print("\n", "-"*20, f"{yyyymmdd}일자", "-"*20)
 
     # 상영관 테이블 -> 해당일자 해당상영관의 상영정보 전체 -> ul
     info_timetable = get_tags_by_class(html_soup, "info-timetable")[0]
     ul_tag = info_timetable.ul
-    
+
     # 해당일자 해당상영관의 상영정보 하나 -> li
     li_tags = ul_tag.find_all("li", recursive=False)
-    screen_data_by_day = []
-    
+    timetable_per_day = []
+
     for li_tag in li_tags:
         screen_data = get_screen_data_by_screening(li_tag)
-        screen_data_by_day.append(screen_data)
-    print(screen_data_by_day)
-    return screen_data_by_day
+        timetable_per_day.append(screen_data)
+
+    return timetable_per_day
 
 
 def get_whole_timetable(request_url_with_out_date, day_range):
-    screen_whole_data = dict()
+    whole_timetable = dict()
     for m, d, dd, yyyymmdd in day_range:
-        screen_data_by_day = get_timetable_by_day(request_url_with_out_date, yyyymmdd)
-        screen_whole_data[yyyymmdd] = screen_data_by_day
-    return screen_whole_data
+        timetable_per_day = get_timetable_per_day(
+            request_url_with_out_date, yyyymmdd)
+        whole_timetable[yyyymmdd] = timetable_per_day
+    return whole_timetable
+
+
+def print_timetable_per_day(yyyymmdd, timetable_per_day):
+    print("\n", "-"*20, f"{yyyymmdd}일자({len(timetable_per_day)})", "-"*20)
+    for screen_data in timetable_per_day:
+        print(screen_data)
+
+
+def print_whole_timetable(whole_timetable):
+    for yyyymmdd, timetable_per_day in whole_timetable.items():
+        print_timetable_per_day(yyyymmdd, timetable_per_day)
+
 
 def do():
     # 1. 원하는 데이터로 url 생성 후, http 요청 후 soup으로 변환
@@ -168,6 +180,13 @@ def do():
     # 2. soup에서 원하는 것을 추출하기 위해 파싱 -> 상영 날짜
     theater_name = get_theater_name(html_soup)
     day_range = get_day_range(html_soup)
+    print(theater_name)
+
+    # # 3. 특정 날짜별 HTTP 요청
+    whole_timetable = get_whole_timetable(
+        request_url_with_out_date, day_range)  # dict 형태 : yyyymmdd - timetable_per_day
+    print_whole_timetable(whole_timetable)
+    return whole_timetable
 
 
     # # 3. 특정 날짜별 HTTP 요청
