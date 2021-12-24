@@ -76,9 +76,13 @@ def get_tags_by_class(html_soup, target_cls):
 
 
 def get_theater_name(html_soup):
-    col_theater = get_tags_by_class(html_soup, "col-theater")[0]
-    a_tag = col_theater.a
-    return f"{a_tag.contents[0]} {a_tag.contents[2]}"
+    try:
+        # 해당 날짜에 해당 상영이 전혀 없을 경우 -> None 리턴
+        col_theater = get_tags_by_class(html_soup, "col-theater")[0]
+        a_tag = col_theater.a
+        return f"{a_tag.contents[0]} {a_tag.contents[2]}"
+    except IndexError:
+        return None
     # e.g. CGV 용산아이파크몰, e.g. 씨네드쉐프 압구정
 
 
@@ -136,19 +140,22 @@ def get_timetable_per_day(request_url_with_out_date, yyyymmdd):
     request_url = f"{request_url_with_out_date}&date={yyyymmdd}"
     html_soup = get_soup_from_url(request_url)
 
-    # 상영관 테이블 -> 해당일자 해당상영관의 상영정보 전체 -> ul
-    info_timetable = get_tags_by_class(html_soup, "info-timetable")[0]
-    ul_tag = info_timetable.ul
+    try:    
+        # 상영관 테이블 -> 해당일자 해당상영관의 상영정보 전체 -> ul
+        info_timetable = get_tags_by_class(html_soup, "info-timetable")[0]
+        ul_tag = info_timetable.ul
 
-    # 해당일자 해당상영관의 상영정보 하나 -> li
-    li_tags = ul_tag.find_all("li", recursive=False)
-    timetable_per_day = []
+        # 해당일자 해당상영관의 상영정보 하나 -> li
+        li_tags = ul_tag.find_all("li", recursive=False)
+        timetable_per_day = []
 
-    for li_tag in li_tags:
-        screen_data = get_screen_data_by_screening(li_tag)
-        timetable_per_day.append(screen_data)
+        for li_tag in li_tags:
+            screen_data = get_screen_data_by_screening(li_tag)
+            timetable_per_day.append(screen_data)
 
-    return timetable_per_day
+        return timetable_per_day
+    except IndexError:
+        return []
 
 
 def get_whole_timetable(request_url_with_out_date, day_range):
@@ -178,9 +185,11 @@ def do():
     print(f'요청주소: {request_url_with_out_date}')
 
     # 2. soup에서 원하는 것을 추출하기 위해 파싱 -> 상영 날짜
-    theater_name = get_theater_name(html_soup)
     day_range = get_day_range(html_soup)
-    print(theater_name)
+    
+    # 필요한지 코드인지 재체크 필요
+    # theater_name = get_theater_name(html_soup)
+    # print(theater_name)
 
     # # 3. 특정 날짜별 HTTP 요청
     whole_timetable = get_whole_timetable(
