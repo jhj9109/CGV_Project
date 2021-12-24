@@ -178,6 +178,29 @@ def print_whole_timetable(whole_timetable):
         print_timetable_per_day(yyyymmdd, timetable_per_day)
 
 
+def update_data(db, movie_name, theater_type, whole_timetable):
+    for yyyymmdd, timetable_per_day in whole_timetable.items():
+        for screen_data in timetable_per_day:
+            data = {
+                "movie_name": movie_name,
+                "screen_type": theater_type,
+                "date": yyyymmdd,
+                "start_time": screen_data["start_time"],
+                "remain": screen_data["remain"] if screen_data["remain"] != None else screen_data["status"],
+            }
+            update_db(db, data)
+
+
+def compare_new_data(db_data, whole_timetable):
+    new_data = dict()
+    for yyyymmdd, timetable_per_day in whole_timetable.items():
+        for screen_data in timetable_per_day:
+            hhmm = screen_data["start_time"]
+            if f"{yyyymmdd}{hhmm}" not in db_data:
+                new_data[f"{yyyymmdd}{hhmm}"] = screen_data
+    return new_data
+
+
 def do():
     # 1. 원하는 데이터로 url 생성 후, http 요청 후 soup으로 변환
     request_url_with_out_date = create_url("spider_man", "yongsan")
