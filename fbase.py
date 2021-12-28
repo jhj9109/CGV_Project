@@ -6,7 +6,7 @@ from firebase_admin import firestore
 def get_db():
     # 1. 인증
     # 다운로드 받은 json 경로/파일명 입력
-    key_file_name = "cgv-movie-check-firebase-adminsdk-w1s3g-b9ee2e859b.json"
+    key_file_name = "./private/cgv-movie-check-firebase-adminsdk-w1s3g-b9ee2e859b.json"
     cred = credentials.Certificate(key_file_name)
     firebase_admin.initialize_app(cred)
 
