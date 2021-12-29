@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup as bs
 from parse import get_yyyymmdd_by_url
 
 from fbase import get_db, update_db, read_db, get_users
+from smtp import send_email
 HTML_PARSER = "html.parser"
 AREA_CODE = "areacode"
 THEATER_CODE = "theatersCode"
