@@ -201,7 +201,12 @@ def compare_new_data(db_data, whole_timetable):
     return new_data
 
 
-def do():
+
+
+def get_user_email_list(db):
+    users = get_users(db)
+    user_email_list = [v["email"] for k, v in users.items()]
+    return user_email_list
     # 1. 원하는 데이터로 url 생성 후, http 요청 후 soup으로 변환
     request_url_with_out_date = create_url("spider_man", "yongsan")
     html_soup = get_soup_from_url(request_url_with_out_date)
