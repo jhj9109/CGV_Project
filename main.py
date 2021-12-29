@@ -202,6 +202,24 @@ def compare_new_data(db_data, whole_timetable):
     return new_data
 
 
+def create_email_body(new_data):
+    strings = []
+    for yyyymmddhhmm, d in new_data.items():
+        content = ""
+        yyyy, mmdd,  hhmm = yyyymmddhhmm[:4], yyyymmddhhmm[4:8], yyyymmddhhmm[8:]
+        content += f"<p>{yyyy}년 {mmdd[:2]}월 {mmdd[2:]}일 {hhmm[:2]}시{hhmm[2:]}분 남은 좌석수:{d['remain']}</p>"
+        content += f"<a href='{d['href']}'>{d['href']}</a>"
+        strings.append(content)
+    return "<br/>".join(strings)
+
+
+def create_context_for_send_email(subject, user_email_list, email_body):
+    context = dict(
+        subject=subject,
+        body=email_body,
+        email_list=user_email_list,
+    )
+    return context
 
 
 def get_user_email_list(db):
