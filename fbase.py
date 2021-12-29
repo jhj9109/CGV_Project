@@ -47,3 +47,10 @@ def read_db(db, movie_name="", screen_type=""):
         collection = db.collection("movies")
         docs = collection.stream()
         return {doc.id: doc.to_dict() for doc in docs}
+
+
+def get_users(db):
+
+    collection = db.collection("users")
+    docs = collection.stream()
+    return {doc.id: doc.to_dict() for doc in docs}
