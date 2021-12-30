@@ -5,6 +5,8 @@ from parse import get_yyyymmdd_by_url
 from fbase import get_db, update_db, read_db, get_users
 from smtp import send_email
 from time import localtime
+import threading
+from argparse import ArgumentParser
 HTML_PARSER = "html.parser"
 AREA_CODE = "areacode"
 THEATER_CODE = "theatersCode"
@@ -274,7 +276,27 @@ def main(db, prev_data, movie_name, theater_name, theater_type):
     return new_data, modified_data
 
 
-    # # 3. 특정 날짜별 HTTP 요청
-    screen_whole_data = get_whole_timetable(request_url_with_out_date, day_range)
-    
-    return screen_whole_data
+if __name__ == "__main__":
+
+    parser = ArgumentParser()
+    parser.add_argument('movie_name', choices=['spider_man'])
+    parser.add_argument('-n', '--name', dest='theater_name',
+                        default=YONGSAN_THEATER)
+    parser.add_argument('-t', '--type', dest='theater_type',
+                        default=IMAX_LASER_2D)
+    parser.add_argument('-i', '--interval', dest='repeat_interval',
+                        default=10)
+    args = parser.parse_args()
+
+    db = get_db()
+    init_data = read_db(db, args.movie_name, args.theater_type)
+
+    def repeat(prev_data):
+        new_data, modified_data = main(db, prev_data, args.movie_name,
+                        args.theater_name, args.theater_type)
+        for data_dict in [new_data, modified_data]:
+            for k, v in data_dict.items():
+                prev_data[k] = v
+        threading.Timer(args.repeat_interval, repeat, args=(prev_data,)).start()
+
+    repeat(init_data)
