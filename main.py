@@ -177,16 +177,16 @@ def print_whole_timetable(whole_timetable):
         print_timetable_per_day(yyyymmdd, timetable_per_day)
 
 
-def update_data(db, movie_name, theater_type, whole_timetable):
-    for yyyymmdd, timetable_per_day in whole_timetable.items():
-        for screen_data in timetable_per_day:
-            data = {
-                "movie_name": movie_name,
-                "screen_type": theater_type,
-                "date": yyyymmdd,
-                "start_time": screen_data["start_time"],
-                "remain": screen_data["remain"] if screen_data["remain"] != None else screen_data["status"],
-            }
+def update_data(db, movie_name, new_data, modified_data, theater_type=IMAX_LASER_2D):
+    for data_dict in [new_data, modified_data]:
+        if data_dict:
+            for yyyymmddhhmm, screen_data in data_dict.items():
+                context = {
+                    "movie_name": movie_name,
+                    "screen_type": theater_type,
+                    "yyyymmddhhmm": yyyymmddhhmm,
+                    "screen_data": screen_data,
+                }
             update_db(db, data)
 
 
@@ -232,9 +232,9 @@ def get_user_email_list(db):
     # 2. soup에서 원하는 것을 추출하기 위해 파싱 -> 상영 날짜
     day_range = get_day_range(html_soup)
     
-    # 필요한지 코드인지 재체크 필요
-    # theater_name = get_theater_name(html_soup)
-    # print(theater_name)
+    # 5. 업데이트
+    if new_data or modified_data:
+        update_data(db, movie_name, new_data, modified_data)
 
     # # 3. 특정 날짜별 HTTP 요청
     whole_timetable = get_whole_timetable(
