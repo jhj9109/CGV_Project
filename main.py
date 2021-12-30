@@ -36,7 +36,7 @@ movies = {
 }
 
 theaters = {
-    "yongsan": {
+    YONGSAN_THEATER: {
         AREA_CODE: "01",
         THEATER_CODE: "0013",
     }
@@ -112,9 +112,7 @@ def get_day_range(html_soup):
         m = int(children[0].text.strip()[:-1])  # 월: e.g. 12월
         dd = children[1].text.strip()  # 요일: e.g. 화
         d = int(children[2].text.strip())  # 일: e.g. 20
-        # print(f"{m}월 {d}일 {dd}요일 yyyymmdd: {yyyymmdd}")
         day_range.append([m, d, dd, yyyymmdd])
-    print(f"상영 오픈 범위 : {day_range[0][3]} ~ {day_range[-1][3]}")
     return day_range
 
 
@@ -129,7 +127,6 @@ def get_screen_data_by_screening(li_tag, yyyymmdd):
         start_time = em_tag.string  # e.g."09:05"
         screen_data["status"] = span_tag.string  # e.g. 매진 or 상영중
         screen_data["start_time"] = f"{start_time[0:2]}{start_time[3:5]}"
-        # print(f"{em_tag.string}시간대 {span_tag.string}")
     else:
         # 모든 정보는 a태그의 attr에서 추출 가능하다.
         start_time = a_tag.get("data-playstarttime")  # e.g. "0905"
