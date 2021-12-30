@@ -59,7 +59,7 @@ def get_soup_from_url(url):
     return soup
 
 
-def get_attr(tag, attr):
+def get_attr(tag, attr):  # 무조건 리스트 형태로 리턴받기 위해 활용
     return tag.get(attr) if tag.has_attr(attr) else []
 
 
@@ -67,6 +67,7 @@ def is_contain(tag, attr, target):
     return target in get_attr(tag, attr)
 
 
+# BS.find_all에 넘기는 함수가 target_cls도 인자로 받기 위해 활용
 def is_contain_class_from_tag(target_cls):
     def contain_class(tag):
         return is_contain(tag, "class", target_cls)
@@ -79,11 +80,12 @@ def get_tags_by_class(html_soup, target_cls):
 
 def get_theater_name(html_soup):
     try:
-        # 해당 날짜에 해당 상영이 전혀 없을 경우 -> None 리턴
+        # 기본 : 영화이름 리턴
         col_theater = get_tags_by_class(html_soup, "col-theater")[0]
         a_tag = col_theater.a
         return f"{a_tag.contents[0]} {a_tag.contents[2]}"
     except IndexError:
+        # 해당 날짜에 해당 상영이 전혀 없을 경우 -> IndexError -> None 리턴
         return None
     # e.g. CGV 용산아이파크몰, e.g. 씨네드쉐프 압구정
 
@@ -142,7 +144,7 @@ def get_timetable_per_day(request_url_with_out_date, yyyymmdd):
     request_url = f"{request_url_with_out_date}&date={yyyymmdd}"
     html_soup = get_soup_from_url(request_url)
 
-    try:    
+    try:
         # 상영관 테이블 -> 해당일자 해당상영관의 상영정보 전체 -> ul
         info_timetable = get_tags_by_class(html_soup, "info-timetable")[0]
         ul_tag = info_timetable.ul
