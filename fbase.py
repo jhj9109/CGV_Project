@@ -54,3 +54,13 @@ def get_users(db):
     collection = db.collection("users")
     docs = collection.stream()
     return {doc.id: doc.to_dict() for doc in docs}
+
+
+def get_db_ref(db, path):
+    db_ref = db
+    for i, name in enumerate(path):
+        if i % 2 == 0:
+            db_ref = db_ref.collection(name)
+        else:
+            db_ref = db_ref.document(name)
+    return db_ref
