@@ -4,16 +4,22 @@ from parse import get_yyyymmdd_by_url
 
 from fbase import get_db, update_db, read_db, get_users
 from smtp import send_email
+from time import localtime
 HTML_PARSER = "html.parser"
 AREA_CODE = "areacode"
 THEATER_CODE = "theatersCode"
 MOVIE_ID = "midx"  # 특정 영화
 MOVIE_CODE = "mcode"  # 특정 영화 & 특정 상영관 종류
+
 IMAX_LASER_2D = "imax_laser_2d"
-BASE_URL = "http://www.cgv.co.kr/common/showtimes"
-BASE_URL_BY_THEATER = f"{BASE_URL}/iframeTheater.aspx"
-BASE_URL_BY_MOVIE = f"{BASE_URL}/iframeMovie.aspx"
+YONGSAN_THEATER = "yongsan"
+
+BASE_URL = "http://www.cgv.co.kr"
+BASE_URL_SHOWTIMES = "http://www.cgv.co.kr/common/showtimes"
+BASE_URL_BY_THEATER = f"{BASE_URL_SHOWTIMES}/iframeTheater.aspx"
+BASE_URL_BY_MOVIE = f"{BASE_URL_SHOWTIMES}/iframeMovie.aspx"
 sample_url = "http://www.cgv.co.kr/common/showtimes/iframeMovie.aspx?midx=84949&mcode=20028635&areacode=13"
+
 
 movies = {
     "spider_man": {
