@@ -214,8 +214,9 @@ def create_email_body(new_data):
     for yyyymmddhhmm, d in new_data.items():
         content = ""
         yyyy, mmdd,  hhmm = yyyymmddhhmm[:4], yyyymmddhhmm[4:8], yyyymmddhhmm[8:]
+        href = BASE_URL+d['href']
         content += f"<p>{yyyy}년 {mmdd[:2]}월 {mmdd[2:]}일 {hhmm[:2]}시{hhmm[2:]}분 남은 좌석수:{d['remain']}</p>"
-        content += f"<a href='{d['href']}'>{d['href']}</a>"
+        content += f"<a href='{href}'>{href}</a>"
         strings.append(content)
     return "<br/>".join(strings)
 
