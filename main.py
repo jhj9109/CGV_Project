@@ -187,7 +187,7 @@ def update_data(db, movie_name, new_data, modified_data, theater_type=IMAX_LASER
                     "yyyymmddhhmm": yyyymmddhhmm,
                     "screen_data": screen_data,
                 }
-            update_db(db, data)
+                update_db(db, context)
 
 
 def compare_new_data(db_data, whole_timetable):

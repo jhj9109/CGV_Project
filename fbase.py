@@ -15,22 +15,16 @@ def get_db():
     return db
 
 
-def update_db(db, data):
+def update_db(db, context):
     # 3. 데이터 추가(수정)
-    movie_name = data["movie_name"]
-    screen_type = data["screen_type"]
-    date = data["date"]
-    start_time = data["start_time"]
-    remain = data["remain"]
+    movie_name = context["movie_name"]
+    screen_type = context["screen_type"]
+    yyyymmddhhmm = context["yyyymmddhhmm"]
+    screen_data = context["screen_data"]
 
-    movies_ref = db.collection("movies")  # movies
-    movie_ref = movies_ref.document(movie_name)  # movies > spider_man
-    screen_types_ref = movie_ref.collection(
-        "screen_types")  # ... > spider_man > screen_types
-    target_screen_type_ref = screen_types_ref.document(
-        screen_type)  # ... > screen_types > imax_laser_2d
-    # ... imax_laser_2d > key: yyyymmddhhmm, value: remain(number or string)
-    target_screen_type_ref.update({f"{date}{start_time}": remain})
+    path = ["movies", movie_name, "screen_types", screen_type]
+    target_screen_type_ref = get_db_ref(db, path)
+    target_screen_type_ref.update({yyyymmddhhmm: screen_data})
 
 
 def read_db(db, movie_name="", screen_type=""):
