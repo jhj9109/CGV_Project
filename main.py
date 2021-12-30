@@ -107,16 +107,10 @@ def get_day_range(html_soup):
     return day_range
 
 
-def get_screen_data_by_screening(li_tag):
+def get_screen_data_by_screening(li_tag, yyyymmdd):
     a_tag = li_tag.find("a")
-    screen_data = {
-        "status": None,
-        "start_time": None,
-        "end_time": None,
-        "remain": None,
-        "href": None,
-    }
-
+    screen_data = {key: None for key in [
+        "status", "start_time", "end_time", "remain", "href", "yyyymmddhhmm"]}
     if (a_tag == None):
         # 매진 or 상영준비중으로 a태그가 생략 될 수 있다.
         em_tag = li_tag.find("em")
@@ -136,6 +130,7 @@ def get_screen_data_by_screening(li_tag):
         screen_data["end_time"] = end_time
         screen_data["remain"] = remain
         screen_data["href"] = href
+    screen_data["yyyymmddhhmm"] = yyyymmdd + screen_data["start_time"]
 
     return screen_data
 
@@ -154,7 +149,7 @@ def get_timetable_per_day(request_url_with_out_date, yyyymmdd):
         timetable_per_day = []
 
         for li_tag in li_tags:
-            screen_data = get_screen_data_by_screening(li_tag)
+            screen_data = get_screen_data_by_screening(li_tag, yyyymmdd)
             timetable_per_day.append(screen_data)
 
         return timetable_per_day
