@@ -7,6 +7,9 @@ from smtp import send_email
 from time import localtime
 import threading
 from argparse import ArgumentParser
+from sound import hello_peter
+
+
 HTML_PARSER = "html.parser"
 AREA_CODE = "areacode"
 THEATER_CODE = "theatersCode"
@@ -266,7 +269,7 @@ def main(db, prev_data, movie_name, theater_name, theater_type):
         context = create_context_for_send_email(
             mail_subject, user_email_list, email_body)
         send_email(context)
-        beepsound()
+        hello_peter()
         t = localtime()
         print(f"{t.tm_mon}월{t.tm_mday}일 {t.tm_hour}시{t.tm_min}분{t.tm_sec}초 새로운 데이터 O")
     else:
