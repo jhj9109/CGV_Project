@@ -32,7 +32,7 @@ theaters = {
 }
 
 
-def create_url(movie_name, theater_name, theater_type="imax_laser_2d", yyyymmdd=""):
+def create_url(movie_name, theater_name=YONGSAN_THEATER, theater_type=IMAX_LASER_2D, yyyymmdd=""):
     areacode = theaters[theater_name][AREA_CODE]
     theaterscode = theaters[theater_name][THEATER_CODE]
     midx = movies[movie_name][MOVIE_ID]
@@ -228,7 +228,7 @@ def get_user_email_list(db):
     user_email_list = [v["email"] for k, v in users.items()]
     return user_email_list
     # 1. 원하는 데이터로 url 생성 후, http 요청 후 soup으로 변환
-    request_url_with_out_date = create_url("spider_man", "yongsan")
+    request_url_with_out_date = create_url(movie_name)
     html_soup = get_soup_from_url(request_url_with_out_date)
     print(f'요청주소: {request_url_with_out_date}')
 
