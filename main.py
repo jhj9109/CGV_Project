@@ -196,14 +196,17 @@ def update_data(db, movie_name, new_data, modified_data, theater_type=IMAX_LASER
                 update_db(db, context)
 
 
-def compare_new_data(db_data, whole_timetable):
+def compare_prev_data(prev_data, whole_timetable):
     new_data = dict()
+    modified_data = dict()
     for yyyymmdd, timetable_per_day in whole_timetable.items():
         for screen_data in timetable_per_day:
-            hhmm = screen_data["start_time"]
-            if f"{yyyymmdd}{hhmm}" not in db_data:
-                new_data[f"{yyyymmdd}{hhmm}"] = screen_data
-    return new_data
+            yyyymmddhhmm = screen_data["yyyymmddhhmm"]
+            if yyyymmddhhmm not in prev_data:
+                new_data[yyyymmddhhmm] = screen_data
+            elif prev_data[yyyymmddhhmm]["remain"] != screen_data["remain"]:
+                modified_data[yyyymmddhhmm] = screen_data
+    return new_data, modified_data
 
 
 def create_email_body(new_data):
