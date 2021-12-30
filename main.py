@@ -224,23 +224,44 @@ def get_user_email_list(db):
     users = get_users(db)
     user_email_list = [v["email"] for k, v in users.items()]
     return user_email_list
+
+
+def main(db, prev_data, movie_name, theater_name, theater_type):
+
     # 1. 원하는 데이터로 url 생성 후, http 요청 후 soup으로 변환
     request_url_with_out_date = create_url(movie_name)
     html_soup = get_soup_from_url(request_url_with_out_date)
-    print(f'요청주소: {request_url_with_out_date}')
 
     # 2. soup에서 원하는 것을 추출하기 위해 파싱 -> 상영 날짜
     day_range = get_day_range(html_soup)
-    
+
+    # 3. 특정 날짜별 HTTP 요청
+    whole_timetable = get_whole_timetable(
+        request_url_with_out_date, day_range)  # whole_timetable{키:yyyymmdd, 값:timetable_per_day(<dict>[)}
+
+    # 4. 이전 데이터와 비교
+    new_data, modified_data = compare_prev_data(prev_data, whole_timetable)
+
     # 5. 업데이트
     if new_data or modified_data:
         update_data(db, movie_name, new_data, modified_data)
 
-    # # 3. 특정 날짜별 HTTP 요청
-    whole_timetable = get_whole_timetable(
-        request_url_with_out_date, day_range)  # dict 형태 : yyyymmdd - timetable_per_day
-    print_whole_timetable(whole_timetable)
-    return whole_timetable
+    # 6. 메일 발송
+    if new_data:
+        mail_subject = f"{movie_name} {theater_name} {theater_type}"
+        user_email_list = get_user_email_list(db)
+        email_body = create_email_body(new_data)
+        context = create_context_for_send_email(
+            mail_subject, user_email_list, email_body)
+        send_email(context)
+        beepsound()
+        t = localtime()
+        print(f"{t.tm_mon}월{t.tm_mday}일 {t.tm_hour}시{t.tm_min}분{t.tm_sec}초 새로운 데이터 O")
+    else:
+        t = localtime()
+        print(f"{t.tm_mon}월{t.tm_mday}일 {t.tm_hour}시{t.tm_min}분{t.tm_sec}초 새로운 정보 X")
+
+    return new_data, modified_data
 
 
     # # 3. 특정 날짜별 HTTP 요청
