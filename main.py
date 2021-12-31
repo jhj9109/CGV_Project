@@ -109,9 +109,9 @@ def get_day_range(html_soup):
         yyyymmdd = get_yyyymmdd_by_url(a_tag.get("href"))
         # span: 월, em: 요일, strong: 일
         children = a_tag.find_all(True, recursive=False)
-        m = int(children[0].text.strip()[:-1])  # 월: e.g. 12월
+        m = children[0].text.strip()[:-1]  # 월: e.g. 12월
         dd = children[1].text.strip()  # 요일: e.g. 화
-        d = int(children[2].text.strip())  # 일: e.g. 20
+        d = children[2].text.strip()  # 일: e.g. 20
         day_range.append([m, d, dd, yyyymmdd])
     return day_range
 
@@ -129,9 +129,10 @@ def get_screen_data_by_screening(li_tag, yyyymmdd):
         screen_data["start_time"] = f"{start_time[0:2]}{start_time[3:5]}"
     else:
         # 모든 정보는 a태그의 attr에서 추출 가능하다.
+        # 태그.get(attr) -> 값 or None
         start_time = a_tag.get("data-playstarttime")  # e.g. "0905"
         end_time = a_tag.get("data-playendtime")  # e.g. "0905"
-        remain = int(a_tag.get("data-seatremaincnt"))  # e.g. "11"
+        remain = a_tag.get("data-seatremaincnt123")  # e.g. "11",
         href = a_tag.get("href")  # e.g. "/ticket/?..."
         screen_data["status"] = "ok"
         screen_data["start_time"] = start_time
