@@ -32,6 +32,20 @@ DEFAULT_FILTER_CONDITIONS = [
     ["L", "L", 16, 29],
 ]
 
+def get_row_col(style):
+    col, row = style.split()
+    col, row = int(col[5:-3])//4 + 1, int(row[4:-3])//4
+    if col >= 48:
+        col -= 4
+    elif col >= 34:
+        col -= 3
+    elif col >= 18:
+        col -= 2
+    elif col >= 4:
+        col -= 1
+    return ROW_TO_ALPHA[row], col
+
+
 def get_seat_info(mini_seat_tag):
     is_reserved = is_contain(mini_seat_tag, "class", "reserved")
     style = mini_seat_tag.get("style")
