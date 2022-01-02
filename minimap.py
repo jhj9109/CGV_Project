@@ -1,3 +1,8 @@
+from collections import defaultdict
+from main import get_tags_by_class, is_contain
+import requests
+import json
+from bs4 import BeautifulSoup as bs
 HTML_PARSER = "html.parser"
 MINIMAP_URL = "http://www.cgv.co.kr/common/showtimes/iframeTheater.aspx/GetSeatList"
 
@@ -26,3 +31,26 @@ DEFAULT_FILTER_CONDITIONS = [
     ["J", "K", 16, 29],
     ["L", "L", 16, 29],
 ]
+
+def get_seat_info(mini_seat_tag):
+    is_reserved = is_contain(mini_seat_tag, "class", "reserved")
+    style = mini_seat_tag.get("style")
+    row, col = get_row_col(style)
+    return row, col, is_reserved
+
+
+def get_html_soup(response):
+    html = response.json()['d'].replace('\\"', '"')  # '\\"' -> '"'
+    html_soup = bs(html, HTML_PARSER)
+    return html_soup
+
+
+def get_minimap_info(response):
+    html_soup = get_html_soup(response)
+    mini_seat_tags = get_tags_by_class(html_soup, "mini_seat")
+
+    minimap_info = defaultdict(dict)
+    for mini_seat_tag in mini_seat_tags:
+        row, col, is_reserved = get_seat_info(mini_seat_tag)
+        minimap_info[row][col] = is_reserved
+    return minimap_info
