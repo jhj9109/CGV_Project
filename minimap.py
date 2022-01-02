@@ -88,3 +88,12 @@ def get_filtered_seat(available_seat, filter_conditions):
             if alpha_low <= alpha <= alpha_high and num_low <= num <= num_high:
                 filtered_seat.append(seat)
     return filtered_seat
+
+def main(context):
+    response = requests.post(context["url"], headers=context["headers"],
+                             data=context["data"])
+    minimap_info = get_minimap_info(response)
+    available_seat = get_available_seat(minimap_info)
+    filtered_seat = get_filtered_seat(
+        available_seat, context["filter_conditions"])
+    return filtered_seat
