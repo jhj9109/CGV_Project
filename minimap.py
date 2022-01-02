@@ -68,3 +68,23 @@ def get_minimap_info(response):
         row, col, is_reserved = get_seat_info(mini_seat_tag)
         minimap_info[row][col] = is_reserved
     return minimap_info
+
+
+def get_available_seat(minimap_info):
+    available_seat = []
+    for row, cols_dict in minimap_info.items():
+        for col, is_reserved in cols_dict.items():
+            if not is_reserved:
+                available_seat.append(f"{row}{col}")
+    return available_seat
+
+
+
+def get_filtered_seat(available_seat, filter_conditions):
+    filtered_seat = []
+    for seat in available_seat:
+        alpha, num = seat[0], int(seat[1:])
+        for alpha_low, alpha_high, num_low, num_high in filter_conditions:
+            if alpha_low <= alpha <= alpha_high and num_low <= num <= num_high:
+                filtered_seat.append(seat)
+    return filtered_seat
