@@ -3,6 +3,7 @@ import getSeatList from "./getSeatList";
 import soundPlay from "./soundPlay";
 import notice from "./notice";
 import { theaterScreenCode } from "./payload_code_info";
+import { getSeatInfosFromHtml } from "./getSeatInfos";
 
 const defaultOption = {
   theatercode: '0013',
@@ -26,15 +27,19 @@ async function main(option: Options) {
   if (html === "[]") {
     console.log(new Date().toLocaleString('ko-kr') + " None");
   } else {
-    // 5. 성공적인 응답이였다면 알림
     console.log(new Date().toLocaleString('ko-kr') + " 새로운 일정 등장");
+    // 5. 성공적인 응답 html 파싱하여 구체적인 좌석 정보 추출
+    
+    const seatInfos = getSeatInfosFromHtml(html);
+
+    console.log(seatInfos);
+
     try {
-      soundPlay();
+      // soundPlay(); // codespaces에서 실행중에는 에러 발생.
       notice("새로운 일정 등장")
       console.log("알림 생성")
     } catch (error) {
       console.log(error)
-      console.log("사운드 출력 에러 발생");
     }
   }
   setTimeout(() => main(option), 10 * 1000);
