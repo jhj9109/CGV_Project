@@ -5,10 +5,12 @@ import notice from "./notice";
 import { theaterScreenCode } from "./payload_code_info";
 import { getSeatInfosFromHtml } from "./getSeatInfos";
 
+const MAX_PLAYNUM = 8; // 3시간 * 8타임 
+
 const defaultOption = {
   theatercode: '0013',
-  palyymd: '20230512',
   screencode: '018',
+  palyymd: '20230512',
   playnum: '5',
 }
 

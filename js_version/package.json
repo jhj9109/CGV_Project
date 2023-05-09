@@ -5,6 +5,7 @@
     "@types/node": "^20.1.0",
     "@types/node-notifier": "^8.0.2",
     "@types/play-sound": "^1.1.0",
+    "@types/readline-sync": "^1.4.4",
     "ts-node": "^10.9.1",
     "tslib": "^2.5.0"
   },
@@ -12,6 +13,7 @@
     "axios": "^1.4.0",
     "cheerio": "^1.0.0-rc.12",
     "node-notifier": "^10.0.1",
-    "play-sound": "^1.1.5"
+    "play-sound": "^1.1.5",
+    "readline-sync": "^1.4.10"
   }
 }
