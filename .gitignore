@@ -2,6 +2,9 @@
 # Created by https://www.toptal.com/developers/gitignore/api/firebase,python
 # Edit at https://www.toptal.com/developers/gitignore?templates=firebase,python
 
+# Mac
+.DS_Store
+
 ### Firebase ###
 .idea
 **/node_modules/*
