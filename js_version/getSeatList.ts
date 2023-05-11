@@ -33,10 +33,21 @@ const newPayload = (option: Options): SeatListRequestPayload => ({
   screenname: ''
 })
 
+/**
+ * 헤더에 저게 있어야 응답이 온다.
+ * GetSeatList가 올바르게 동작하기 위해선 Content-Type도 추가해야 되더라.
+ */
+const DEFAULT_HEADERS = {
+  Host: "www.cgv.co.kr",
+  Origin: "http://www.cgv.co.kr",
+  "Content-Type": "application/json; charset=UTF-8"
+}
+
+// (theatercode & screencode) & (palyymd & playnum) 조합으로 특정 테이블 조회
 const samplePayload = {
   theatercode: '0013',//용아맥: 0013
-  palyymd: '20230129',//yyyymmdd
   screencode: '018',//용아맥-IMAX관 018
+  palyymd: '20230129',//yyyymmdd
   playnum: '6',// 1~6
   starttime: '9999',// 2605
   endtime: '9999',// 2927
@@ -47,33 +58,24 @@ const samplePayload = {
 
 export default async function getSeatList(obj: Options) {
 
-  if (obj.theatercode === undefined ||
-    obj.palyymd === undefined ||
-    obj.screencode === undefined ||
-    obj.playnum === undefined)
-    throw "getSeatList에 필수 인자가 입력되지 않았습니다."
-
   const payload = newPayload(obj);
 
-  /**
-   * 헤더에 저게 있어야 응답이 온다.
-   */
-  const headers = {
-    Host: "www.cgv.co.kr",
-    Origin: "http://www.cgv.co.kr"
-  }
-
   try {
+
     const { data } = await axios({
       url: GET_SEAT_LIST_URL,
       method: 'post',
-      headers,
+      headers: DEFAULT_HEADERS,
       data: payload,
     });
-    // data = {d: "html 구조" || "[]""}
-    const html = data.d;
+    
+    const html = data.d; // data = {d: "html 구조" || "[]""}
+
     return html;
+
   } catch (error) {
+    
     throw error;
+
   }
 }

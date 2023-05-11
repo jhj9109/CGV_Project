@@ -5,10 +5,12 @@ import notice from "./notice";
 import { theaterScreenCode } from "./payload_code_info";
 import { getSeatInfosFromHtml } from "./getSeatInfos";
 
+const MAX_PLAYNUM = 8; // 3시간 * 8타임 
+
 const defaultOption = {
   theatercode: '0013',
-  palyymd: '20230512',
   screencode: '018',
+  palyymd: '20230517',
   playnum: '5',
 }
 
@@ -27,7 +29,7 @@ async function main(option: Options) {
   if (html === "[]") {
     console.log(new Date().toLocaleString('ko-kr') + " None");
   } else {
-    console.log(new Date().toLocaleString('ko-kr') + " 새로운 일정 등장");
+    console.log(new Date().toLocaleString('ko-kr') + `새로운 일정 ${option.palyymd} 등장`);
     // 5. 성공적인 응답 html 파싱하여 구체적인 좌석 정보 추출
     
     const seatInfos = getSeatInfosFromHtml(html);
