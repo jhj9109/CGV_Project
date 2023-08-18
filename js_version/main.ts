@@ -2,8 +2,11 @@ import type { Options } from "./getSeatList";
 import getSeatList from "./getSeatList";
 import soundPlay from "./soundPlay";
 import notice from "./notice";
-import { theaterScreenCode } from "./payload_code_info";
 import { getSeatInfosFromHtml } from "./getSeatInfos";
+import { loadJsonFile } from "./utils";
+
+const MAX_PLAYNUM = 8; // 3시간 * 8타임
+const ONE_SECOND = 1000;
 
 const defaultOption = {
   theatercode: '0013',
@@ -24,10 +27,12 @@ async function main(option: Options) {
   }
 
   // 4. 성공적인 응답인지 확인
+  const dataStr = new Date().toLocaleString('ko-kr');
   if (html === "[]") {
-    console.log(new Date().toLocaleString('ko-kr') + " None");
+    console.log(dataStr + " 일정 X");
+    setTimeout(() => main(option), 10 * ONE_SECOND);
   } else {
-    console.log(new Date().toLocaleString('ko-kr') + " 새로운 일정 등장");
+    console.log(dataStr + " 새로운 일정 등장");
     // 5. 성공적인 응답 html 파싱하여 구체적인 좌석 정보 추출
     
     const seatInfos = getSeatInfosFromHtml(html);
@@ -42,20 +47,22 @@ async function main(option: Options) {
       console.log(error)
     }
   }
-  setTimeout(() => main(option), 10 * 1000);
 }
 
 (function () {
-  // 1. 옵션 생성
-  // 1-1. 타겟 설정(영화관 & 스크린)
-  const { theatercode, screencode } = theaterScreenCode.가오갤_IMAX_용산_2D;
-  // 1-2. 타임 설정(날짜 & 시간)
-  const { palyymd, playnum } = defaultOption;
-  const option: Options = {
+  // 1. option 생성
+  const config = loadJsonFile('./movie.conf.json')
+  // console.log(config)
+  
+  const { theatercode, screencodes } = config["상영관"]["용산아이파크몰"]
+  console.log(theatercode, screencodes)
+  const screencode = screencodes["IMAX_LASER_2D"];
+  console.log(screencode);
+
+  (["20230830"] as string[]).forEach((palyymd: string) => main({
     theatercode,
-    screencode,
     palyymd,
-    playnum
-  };
-  main(option);
+    screencode,
+    playnum: '1',
+  }))
 }());
