@@ -2,14 +2,14 @@
  * midx: 지점, 용산 86883
  * mcode: 영화관 타입, 용산 아이멕스 2D: 20032468, 용산 아이맥스 3D: 20032465
  */
-type TheaterType = "아이맥스_2D" | "아이맥스_3D";
+export type TheaterType = "아이맥스_2D" | "아이맥스_3D";
 
-interface MovieInfo {
+export interface MovieInfo {
     midx: string;
     mcodes: Record<TheaterType, string>
 }
 
-interface TheaterInfo {
+export interface TheaterInfo {
     areacode: string;
     theatercode: string;
 }
@@ -29,7 +29,7 @@ const 서울지역_용산아이맥스_가오갤_URL = (date: string) =>
 const toQueryString = (queries: object) =>
     Object.entries(queries).map(([key, value]) => `${key}=${value}`).join('&')
 
-const getUrl = (movie: MovieInfo, movieType: TheaterType, theater: TheaterInfo, date: string) => {
+export const getUrl = (movie: MovieInfo, movieType: TheaterType, theater: TheaterInfo, date: string) => {
     const BASE_URL = 'http://www.cgv.co.kr/common/showtimes/iframeMovie.aspx';
 
     if (!(movieType in movie)) {

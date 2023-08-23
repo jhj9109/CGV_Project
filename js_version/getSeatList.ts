@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { getHtmlString } from './api';
 
 export interface Options {
   theatercode: string;
@@ -62,20 +63,21 @@ export default async function getSeatList(obj: Options) {
 
   try {
 
-    const { data } = await axios({
+    const htmlString = getHtmlString({
       url: GET_SEAT_LIST_URL,
       method: 'post',
       headers: DEFAULT_HEADERS,
-      data: payload,
+      payload,
+      params: {}
     });
-    
-    const html = data.d; // data = {d: "html 구조" || "[]""}
 
-    return html;
+    return htmlString;
 
   } catch (error) {
     
-    throw error;
+    return '';
+    
+    // throw error;
 
   }
 }

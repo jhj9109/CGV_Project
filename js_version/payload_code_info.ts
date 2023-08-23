@@ -18,7 +18,7 @@ export interface TheaterScreenCode {
 // }
 
 export const theaterScreenCode: Record<string, TheaterScreenCode> = {
-  가오갤_IMAX_용산_2D: {
+  IMAX_용산_2D: {
     theatercode: '0013',
     screencode: '018',
   }
